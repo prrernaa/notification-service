@@ -1,5 +1,6 @@
 package com.prerna.notification_service.kafka;
 
+import com.prerna.notification_service.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,16 +12,17 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class UserRegisteredConsumer {
 
-    private final ObjectMapper objectMapper;
+    private final EmailService emailService;
 
-    @KafkaListener(topics = "user.registered", groupId = "notification-group")
-    public void consumeUserRegisteredEvent(String message) {
-        try {
-            UserRegisteredEvent event = objectMapper.readValue(message, UserRegisteredEvent.class);
-            log.info("Received user.registered event for: {} ({})", event.getName(), event.getEmail());
-            // Email sending will be added in Module 4
-        } catch (Exception e) {
-            log.error("Failed to process event: {}", e.getMessage());
-        }
+    @KafkaListener(
+            topics = "user.registered",
+            groupId = "notification-group"
+    )
+    public void handleUserRegisteredEvent(UserRegisteredEvent event) {
+        log.info("Received user.registered event for: {}", event.getEmail());
+
+        emailService.sendWelcomeEmail(event.getEmail(), event.getName());
+
+        log.info("Notification processed for userId: {}", event.getUserId());
     }
 }
