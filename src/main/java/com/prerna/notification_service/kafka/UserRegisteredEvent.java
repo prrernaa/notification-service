@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserRegisteredEvent {
+
     private String userId;
-    private String email;
     private String name;
+    private String email;
+    private String deviceToken;  // ← ADD THIS
 }
